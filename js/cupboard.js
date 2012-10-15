@@ -1,6 +1,6 @@
 jQuery(document).ready(function(){
 	//Hide everything
-	jQuery("#manager-form, .alert").hide();
+	jQuery("#manager-form").hide();
 	//Form trigger
 	jQuery("a#add-new, #close-form").click(function(e){
 		var manager_form = jQuery("#manager-form");
@@ -9,11 +9,18 @@ jQuery(document).ready(function(){
 		else jQuery("#manager-form").slideDown("normal").addClass("show");
 		e.preventDefault();
 	});
-	//Process submit
-	jQuery(".submit-cupboard").click(function(e){
+
+	jQuery("#cupboard-delete-button").click(function(e) {
+		e.preventDefault();
+		var item = jQuery(this).attr("href").replace(/#/, '');
+	});
+
+	jQuery("#cupboard-edit-button").click(function(e) {
 		e.preventDefault();
 		var manager_form = jQuery("#manager-form");
-		manager_form.slideUp("normal").removeClass("hide");
-		jQuery(".alert-success").slideDown("normal");
+		var item = jQuery(this).attr("href").replace(/#/, '');
+		//Toggle form behavior
+		if (manager_form.hasClass("show")) jQuery("#manager-form").slideUp("normal").removeClass("show");
+		else jQuery("#manager-form").slideDown("normal").addClass("show");
 	});
 });

@@ -13,16 +13,11 @@
 		<div class="container">
 			<div class="row">
 				<div class="span12">
-					<div id="success-message" class="alert alert-success">
-						<a href="#" class="close" data-dismiss="alert">×</a>
-						<strong>Your changes have been successfully saved!</strong>
-					</div>
-					<div id="error-message" class="alert alert-error">
-						<strong>Error</strong>
-					</div>
+					<?php if ($_POST && $_SERVER['REQUEST_METHOD'] === 'POST') : do_action('cupboard_add'); ?>
+					<?php else: ?>
 					<div id="manager-form" class="well">
 						<div class="span5">
-							<form id="form-submit">
+							<form method="post" action="" enctype="multipart/form-data">
 								<label>Title</label>
 								<input type="text" name="title" id="title" class="span5">
 								<label>Description</label>
@@ -37,15 +32,22 @@
 									<?php endforeach; ?>
 								</select>
 								<label>File</label>
-								<input type="file" name="document">
+								<input type="file" name="document" id="document">
 						</div>
 						<div class="span10">
-							</form>
-							<button id="form-submit" class="submit-cupboard btn btn-primary">Save Changes</button>
+							<?php
+								$cp = wp_create_nonce('cupboard_manager');
+								$process = wp_create_nonce('cupboard_new');
+							?>
+							<input type="hidden" name="cp" value="<?php echo $cp; ?>">
+							<input type="hidden" name="process" value="<?php echo $process; ?>">
+							<button type="submit" class="btn btn-primary">Save Changes</button>
 							<button class="btn" id="close-form">Cancel</button>
+							</form>
 						</div>
 						<div class="clearfix"></div>
 					</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
@@ -55,8 +57,8 @@
 			<tr>
 				<th scope="col" id="cb" class="manage-column column-cb check-column" style=""><input type="checkbox"></th>
 				<th scope="col" id="title" class="manage-column column-title" style="">Title</th>
-				<th scope="col" id="categories" class="manage-column column-name" style="">Categories</th>
-				<th scope="col" id="categories" class="manage-column column-tags" style="">Extension</th>
+				<th scope="col" id="categories" class="manage-column column-name" style="">Description</th>
+				<th scope="col" id="categories" class="manage-column column-name" style="">Category</th>
 				<th scope="col" id="categories" class="manage-column column-categories" style="">Date</th>
 			</tr>
 		</thead>
@@ -64,17 +66,20 @@
 			<?php foreach(cupboard_get_documents() as $document) : ?>
 				<tr valign="middle">
 					<th scope="row" class="check-column"><input type="checkbox" name="linkcheck[]" value="1"></th>
-					<td class="column-title"><a class="row-title"><?php echo $document->title; ?></a></td>
-					<td class="column-name"><?php echo $document->category; ?></td>
-					<td class="column-categories">
-						<?php
-							preg_match('/\.[^\.]+$/i', $document->filename, $ext);
-							echo str_replace('.', '', $ext[0]);
-						?>
+					<td class="column-title">
+						<?php $repo = wp_upload_dir(); ?>
+						<a href="<?php echo $repo['baseurl'].'/cupboard/'.$document->filename; ?>" class="row-title" target="_blank"><?php echo $document->title; ?></a>
+						<div class="row-actions">
+							<span class="edit"><a href="<?php echo $document->id; ?>" id="cupboard-edit-button">Edit</a> | </span><span class="trash"><a href="<?php echo $document->id; ?>" id="cupboard-delete-button">Trash</a> | </span><span class="view"><a href="<?php echo $repo['baseurl'].'/cupboard/'.$document->filename; ?>" target="_blank">View</a></span>
+						</div>
 					</td>
+					<td class="column-name"><?php echo $document->description; ?></td>
+					<td class="column-name"><?php echo $document->category; ?></td>
 					<td class="column-categories"><?php echo $document->created_at; ?></td>
 				</tr>
 			<?php endforeach; ?>
 		</tbody>
 	</table>
 </div>
+
+

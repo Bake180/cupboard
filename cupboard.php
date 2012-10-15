@@ -104,9 +104,8 @@ function cupboard_get_documents()
 		"
 		SELECT d.*, c.* FROM {$wpdb->cupboard_document} AS d
 		LEFT JOIN {$wpdb->cupboard_category} AS c ON d.category_id = c.id
-		WHERE d.status = 1
-		"
-		,OBJECT_K);
+		WHERE d.status = 1 ORDER BY d.title ASC
+		");
 
 	return $docs;
 }
